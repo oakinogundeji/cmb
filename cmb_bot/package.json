@@ -1,0 +1,20 @@
+{
+  "name": "cmb",
+  "version": "1.0.0",
+  "description": "a demo project to display ability of bots to search for info and send to recipients",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node bot.js",
+    "start-dev": "nodemon bot.js"
+  },
+  "author": "TSSDEVS",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "puppeteer": "^1.7.0"
+  },
+  "devDependencies": {
+    "dotenv": "^6.0.0"
+  }
+}
