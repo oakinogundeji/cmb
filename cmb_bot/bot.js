@@ -59,27 +59,27 @@ async function getBloombergData() {
   await page.waitForSelector(CONTENT_DIV_SELECTOR, {timeout: 30000});
   // get text content
   const TXT = await page.$eval(CONTENT_DIV_SELECTOR, target => target.innerText);
-  console.log(`TXT: ${TXT}`);
+  //console.log(`TXT: ${TXT}`);
   // remove 'Collapse Detail' from TXT
   const OUTPUT = TXT.replace('Collapse Detail', '');
-  console.log(`OUTPUT: ${OUTPUT}`);
+  //console.log(`OUTPUT: ${OUTPUT}`);
   // return OUTPUT
   await page.waitFor(10*1000);
   await page.close();
   await browser.close();
   return OUTPUT;
 }
-console.log(`process.argv.length: ${process.argv.length}`);
+// console.log(`process.argv.length: ${process.argv.length}`);
 
 if(process.argv.length > 2) {
   extraEmails = process.argv.slice(2).join(', ');
-  console.log(`extra emails: ${extraEmails}`);
-  console.log(`typeof(extraEmails): ${typeof(extraEmails)}`);
+  // console.log(`extra emails: ${extraEmails}`);
+  // console.log(`typeof(extraEmails): ${typeof(extraEmails)}`);
 }
 // send GMAIL
 async function sendDataViaGmail(data) {
-  console.log(`data:`);
-  console.log(data);
+  //console.log(`data:`);
+  //console.log(data);
   // instantiate browser
   const browser = await P.launch({
     headless: false,
@@ -104,7 +104,7 @@ async function sendDataViaGmail(data) {
   // ensure EMAIL_SELECTOR available
   await page.waitForSelector(EMAIL_SELECTOR, {timeout: 30000});
   // type email address
-  await page.type(EMAIL_SELECTOR, 'tss@tssdevs.com', {delay: 100});
+  await page.type(EMAIL_SELECTOR, 'teliosdevservices@gmail.com', {delay: 100});
   await page.waitFor(2*1000);
   // ensure MOVE_TO_PASSWORD_SELECTOR available and click on it
   await page.waitForSelector(MOVE_TO_PASSWORD_SELECTOR, {timeout: 30000});

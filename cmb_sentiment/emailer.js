@@ -24,8 +24,6 @@ const
 
 // send GMAIL
 async function sendDataViaGmail(data) {
-  console.log(`data:`);
-  console.log(data);
   // instantiate browser
   const browser = await P.launch({
     headless: false,
@@ -50,7 +48,7 @@ async function sendDataViaGmail(data) {
   // ensure EMAIL_SELECTOR available
   await page.waitForSelector(EMAIL_SELECTOR, {timeout: 30000});
   // type email address
-  await page.type(EMAIL_SELECTOR, 'tss@tssdevs.com', {delay: 100});
+  await page.type(EMAIL_SELECTOR, 'teliosdevservices@gmail.com', {delay: 100});
   await page.waitFor(2*1000);
   // ensure MOVE_TO_PASSWORD_SELECTOR available and click on it
   await page.waitForSelector(MOVE_TO_PASSWORD_SELECTOR, {timeout: 30000});
@@ -122,12 +120,6 @@ async function sendDataViaGmail(data) {
     posOut = printPosTweets(data.pos),
     negOut = printNegTweets(data.neg),
     neutOut = printNeutTweets(data.neut);
-  /*console.log('posOut');
-  console.log(posOut);
-  console.log('negOut');
-  console.log(negOut);
-  console.log('neutOut');
-  console.log(neutOut);*/
   // ensure MSG_BODY_SELECTOR is available and fill it
   await page.waitForSelector(MSG_BODY_SELECTOR, {timeout: 30000});
   await page.type(MSG_BODY_SELECTOR, `Hi,
