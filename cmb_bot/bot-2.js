@@ -12,9 +12,9 @@ const P = require('puppeteer');
 // variables
 
 const
-  BLOG_PAGE = 'https://dejiolowe.com/2018/07/26/three-reasons-why-current-accounts-are-for-dinosaurs/',
-  TOPIC_SELECTOR = '#post-2283 > h2',
-  CONTENT_SELECTOR = '#post-2283 > div',
+  BLOOMBERG = 'https://www.bloomberg.com/research/stocks/private/person.asp?personId=560299433&privcapId=324778401&previousCapId=324778401&previousTitle=Coronation%20Merchant%20Bank',
+  FULL_BACKGROUND_SELECTOR = '#columnLeft > div > div:nth-child(9) > div > a',
+  CONTENT_DIV_SELECTOR = '#columnLeft > div > div:nth-child(9)',
   GOOGLE = 'https://www.google.com/',
   GMAIL_SELECTOR = '#gb_23 > span.gbts',
   EMAIL_SELECTOR = '#Email',
@@ -30,13 +30,10 @@ const
   MSG_BODY_SELECTOR = 'body > table:nth-child(17) > tbody > tr > td:nth-child(2) > table:nth-child(1) > tbody > tr > td:nth-child(2) > form > table.compose > tbody > tr:nth-child(8) > td:nth-child(2) > textarea',
   SEND_EMAIL_SELECTOR = 'body > table:nth-child(17) > tbody > tr > td:nth-child(2) > table:nth-child(1) > tbody > tr > td:nth-child(2) > form > table:nth-child(6) > tbody > tr > td > input[type="submit"]:nth-child(1)';
 
-let
-  recipient,
-  extraEmails,
-  TOPIC_INFO;
+let extraEmails;
 
-// GET DATA FROM BLOG_PAGE
-async function getBlogContent() {
+// GET DATA FROM BLOOMBERG
+async function getBloombergData() {
   // instantiate browser
   const browser = await P.launch({
     headless: false,
@@ -48,61 +45,36 @@ async function getBlogContent() {
   await page.setViewport({width: 1366, height: 768});
   // set the user agent
   await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)');
-  // navigate to BLOG_PAGE
-  await page.goto(BLOG_PAGE, {
+  // navigate to BLOOMBERG
+  await page.goto(BLOOMBERG, {
     waitUntil: 'networkidle2',
     timeout: 180000
   });
-  // ensure TOPIC_SELECTOR available
-  await page.waitForSelector(TOPIC_SELECTOR, {timeout: 30000});
-  // extract topic from TOPIC_SELECTOR
-  TOPIC_INFO = await page.$eval(TOPIC_SELECTOR, target => target.innerText);
+  // ensure FULL_BACKGROUND_SELECTOR available
+  await page.waitForSelector(FULL_BACKGROUND_SELECTOR, {timeout: 30000});
+  // click on FULL_BACKGROUND_SELECTOR
+  await page.click(FULL_BACKGROUND_SELECTOR);
   await page.waitFor(2*1000);
-  // ensure CONTENT_SELECTOR available
-  await page.waitForSelector(CONTENT_SELECTOR, {timeout: 30000});
+  // ensure CONTENT_DIV_SELECTOR available
+  await page.waitForSelector(CONTENT_DIV_SELECTOR, {timeout: 30000});
   // get text content
-  const TXT = await page.$eval(CONTENT_SELECTOR, target => {
-    // declare variables
-    let
-      textArray = [],
-      blogContent;
-    // isolate all content paragraphs
-    const PARAS = target.querySelectorAll('p');
-    console.log('PARAS');
-    console.log(PARAS);
-    // filter PARAS for desired content
-    PARAS.forEach(para => {
-      if(!para.className) {
-        let TXT = para.textContent;
-        TXT += ' \n \n';
-        textArray.push(TXT);
-      }
-    });
-    console.log('textArray');
-    console.log(textArray);
-    // set blogContent to value of generated string
-    blogContent = textArray.join(' ')
-    console.log(`blogContent: ${blogContent}`);
-    // return blogContent
-    return blogContent;
-  });
-  console.log(`TXT: ${TXT}`);
+  const TXT = await page.$eval(CONTENT_DIV_SELECTOR, target => target.innerText);
+  //console.log(`TXT: ${TXT}`);
+  // remove 'Collapse Detail' from TXT
+  const OUTPUT = TXT.replace('Collapse Detail', '');
+  //console.log(`OUTPUT: ${OUTPUT}`);
+  // return OUTPUT
   await page.waitFor(10*1000);
   await page.close();
   await browser.close();
-  return TXT;
+  return OUTPUT;
 }
 // console.log(`process.argv.length: ${process.argv.length}`);
 
 if(process.argv.length > 2) {
-  // set email recipient
-  recipient = process.argv[2];
-  // set copied recipients
-  if(process.argv.length > 3) {
-    extraEmails = process.argv.slice(3).join(', ');
-  }
-  console.log(`recipient: ${recipient}`);
-  console.log(`extra emails: ${extraEmails}`);
+  extraEmails = process.argv.slice(2).join(', ');
+  // console.log(`extra emails: ${extraEmails}`);
+  // console.log(`typeof(extraEmails): ${typeof(extraEmails)}`);
 }
 // send GMAIL
 async function sendDataViaGmail(data) {
@@ -126,7 +98,7 @@ async function sendDataViaGmail(data) {
   });
   // ensure GMAIL_SELECTOR available
   await page.waitForSelector(GMAIL_SELECTOR, {timeout: 30000});
-  // click on TOPIC_SELECTOR
+  // click on FULL_BACKGROUND_SELECTOR
   await page.click(GMAIL_SELECTOR);
   await page.waitFor(2*1000);
   // ensure EMAIL_SELECTOR available
@@ -152,7 +124,7 @@ async function sendDataViaGmail(data) {
   await page.waitFor(2*1000);
   // ensure TO_SELECTOR is available and fill it
   await page.waitForSelector(TO_SELECTOR, {timeout: 30000});
-  await page.type(TO_SELECTOR, recipient, {delay: 100});
+  await page.type(TO_SELECTOR, 'demilade@tssdevs.com', {delay: 100});
   await page.waitFor(2*1000);
   if(!!extraEmails) {
     // ensure CC_SELECTOR is available and fill it
@@ -162,13 +134,13 @@ async function sendDataViaGmail(data) {
   }
   // ensure SUBJECT_SELCTOR is available and fill it
   await page.waitForSelector(SUBJECT_SELCTOR, {timeout: 30000});
-  await page.type(SUBJECT_SELCTOR, 'End of Telios Services Bot demo.', {delay: 100});
+  await page.type(SUBJECT_SELCTOR, 'Background info', {delay: 100});
   await page.waitFor(2*1000);
   // ensure MSG_BODY_SELECTOR is available and fill it
   await page.waitForSelector(MSG_BODY_SELECTOR, {timeout: 30000});
   await page.type(MSG_BODY_SELECTOR, `Hi,
 
-    The Telios bot retrieved information on ${TOPIC_INFO} from the blog of Adédèjì Olówè. This blog article can be found at ${BLOG_PAGE}. The content of the article follows:
+    Please find below the information you requested.
 
     ${data}`, {delay: 20});
   await page.waitFor(2*1000);
@@ -182,6 +154,6 @@ async function sendDataViaGmail(data) {
   }, 5000);
 }
 
-getBlogContent()
+getBloombergData()
   .then(data => sendDataViaGmail(data))
   .catch(err => console.log(err));
